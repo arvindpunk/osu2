@@ -1,5 +1,9 @@
 let score;
-let circle1;
+let circles = [];
+let minSpawnRate;
+let maxSpawnRate;
+let spawnRate;
+let counter;
 
 class Circle {
 	constructor() {
@@ -16,9 +20,10 @@ class Circle {
 
 	update() {
 		this.r = constrain(this.r + 0.4, 20, this.maxr);
-		if (this.r == this. maxr) {
+		if (this.r == this.maxr) {
 			score -= 200;
-			circle1 = new Circle();
+			circles.shift();
+			spawnRate += 20;
 			console.log(score);
 		}
 		let alpha = map(this.r, 20, this.maxr, 255, 10);
@@ -28,28 +33,42 @@ class Circle {
 
 function setup() {
 	score = 0;
+	counter = 0;
+	spawnRate = 80;
+	minSpawnRate = 30;
+	maxSpawnRate = 110;
 	createCanvas(windowWidth, windowHeight);
 	noStroke();
 	textAlign(LEFT, TOP);
 	textSize(24);
 	textFont('Helvetica');
-	circle1 = new Circle();
 }
 
 function draw() {
 	background(200, 120, 180);
-	circle1.update();
-	circle1.render();
+	counter = (counter + 1)%spawnRate;
+	if (counter === 0) {
+		circles.push(new Circle());
+	}
+	circles.forEach((circle) => {
+		circle.update();
+		circle.render();
+	});
 
 	text("SCORE: ".concat(int(score).toString()), 40, 40);
 }
 
 function mousePressed() {
-	if (dist(circle1.x, circle1.y, mouseX, mouseY) <= circle1.r) {
-		score += 100 - circle1.r;
-		circle1 = new Circle();
-	} else {
-		score -= 20;
+	if (circles	.length > 0) {
+		if (dist(circles[0].x, circles[0].y, mouseX, mouseY) <= circles[0].r) {
+			score += 100 - circles[0].r;
+			circles.shift();
+			// circles.push(new Circle());
+			spawnRate = constrain(spawnRate - 5, minSpawnRate, maxSpawnRate);
+		} else {
+			score -= 20;
+			spawnRate += 20;
+		}
 	}
 	console.log(score);
 }

@@ -5,6 +5,7 @@ let maxSpawnRate;
 let spawnRate;
 let counter;
 let circleCounter;
+let backgroundr, backgroundg, backgroundb;
 
 class Circle {
 	constructor() {
@@ -27,6 +28,7 @@ class Circle {
 		this.r = constrain(this.r + 0.4, 20, this.maxr);
 		if (this.r == this.maxr) {
 			score -= 200;
+			backgroundr = 255;
 			circles.shift();
 			spawnRate += 20;
 		}
@@ -44,6 +46,10 @@ function setup() {
 	spawnRate = 80;
 	minSpawnRate = 30;
 	maxSpawnRate = 110;
+
+	backgroundr = 200;
+	backgroundg = 120;
+	backgroundb = 180;
 	createCanvas(windowWidth, windowHeight);
 	noStroke();
 	fill(255, 255, 255, 255);
@@ -53,7 +59,7 @@ function setup() {
 }
 
 function draw() {
-	background(200, 120, 180);
+	background(backgroundr = constrain(backgroundr - 4, 200, 255), backgroundg, backgroundb);
 
 	// Counter based changes
 	counter = (counter + 1)%spawnRate;
@@ -76,12 +82,13 @@ function draw() {
 }
 
 function mousePressed() {
-	if (circles	.length > 0) {
+	if (circles.length > 0) {
 		if (dist(circles[0].x, circles[0].y, mouseX, mouseY) <= circles[0].r) {
 			score += 100 - circles[0].r;
 			circles.shift();
 			spawnRate = constrain(spawnRate - 5, minSpawnRate, maxSpawnRate);
 		} else {
+			backgroundr = 255;
 			score -= 20;
 			spawnRate += 20;
 		}

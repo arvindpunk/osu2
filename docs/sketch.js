@@ -4,6 +4,7 @@ let minSpawnRate;
 let maxSpawnRate;
 let spawnRate;
 let counter;
+let circleCounter;
 
 class Circle {
 	constructor() {
@@ -11,10 +12,14 @@ class Circle {
 		this.y = 100 + random(height - 200);
 		this.r = random(20, 30);
 		this.maxr = 100;
+		this.circleCounter = circleCounter;
+		circleCounter = (circleCounter)%8 + 1;
 	}
 
 	render() {
 		circle(this.x, this.y, 2 * this.r);
+		fill(0, 0, 0, 255);
+		text(this.circleCounter, this.x, this.y)
 		fill(255, 255, 255, 255);
 	}
 
@@ -24,38 +29,50 @@ class Circle {
 			score -= 200;
 			circles.shift();
 			spawnRate += 20;
-			console.log(score);
 		}
 		let alpha = map(this.r, 20, this.maxr, 255, 10);
 		fill(255, 255, 255, alpha)
 	}
+
+	// TO-DO: Create circle destroy animation
 }
 
 function setup() {
 	score = 0;
-	counter = 0;
+	counter = -1;
+	circleCounter = 1;
 	spawnRate = 80;
 	minSpawnRate = 30;
 	maxSpawnRate = 110;
 	createCanvas(windowWidth, windowHeight);
 	noStroke();
-	textAlign(LEFT, TOP);
+	fill(255, 255, 255, 255);
 	textSize(24);
 	textFont('Helvetica');
+	frameRate(50);
 }
 
 function draw() {
 	background(200, 120, 180);
+
+	// Counter based changes
 	counter = (counter + 1)%spawnRate;
 	if (counter === 0) {
 		circles.push(new Circle());
 	}
+
+	// Circles updation and rendering
+	textAlign(CENTER, CENTER);
 	circles.forEach((circle) => {
 		circle.update();
 		circle.render();
 	});
 
+
+	// GUI Rendering
+	textAlign(LEFT, TOP);
 	text("SCORE: ".concat(int(score).toString()), 40, 40);
+	text("FPS: ".concat(int(frameRate()).toString()), 400, 40);
 }
 
 function mousePressed() {
@@ -63,7 +80,6 @@ function mousePressed() {
 		if (dist(circles[0].x, circles[0].y, mouseX, mouseY) <= circles[0].r) {
 			score += 100 - circles[0].r;
 			circles.shift();
-			// circles.push(new Circle());
 			spawnRate = constrain(spawnRate - 5, minSpawnRate, maxSpawnRate);
 		} else {
 			score -= 20;
